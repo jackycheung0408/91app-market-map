@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>91APP 二手市集 ‧ 攤位地圖</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#faf9f5; --card:#ffffff; --ink:#2c2c2a; --ink2:#5f5e5a; --ink3:#888780;
+  --line:#e3e1d8; --line2:#c9c7bc; --red:#c0392b;
+  --purple-bg:#eeedfe; --purple-ln:#7f77dd; --purple-tx:#3c3489;
+  --teal-bg:#e1f5ee;  --teal-ln:#1d9e75;  --teal-tx:#085041;
+  --coral-bg:#faece7; --coral-ln:#d85a30; --coral-tx:#712b13;
+  --pink-bg:#fbeaf0;  --pink-ln:#d4537e;  --pink-tx:#72243e;
+  --blue-bg:#e6f1fb;  --blue-ln:#378add;  --blue-tx:#0c447c;
+  --gray-bg:#f1efe8;  --gray-ln:#b4b2a9;  --gray-tx:#444441;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1f1e1c; --card:#2a2927; --ink:#edebe3; --ink2:#b4b2a9; --ink3:#888780;
+    --line:#3d3c39; --line2:#55534e; --red:#e8705f;
+    --purple-bg:#2e2862; --purple-ln:#afa9ec; --purple-tx:#cecbf6;
+    --teal-bg:#0d4a3a;  --teal-ln:#5dcaa5;  --teal-tx:#9fe1cb;
+    --coral-bg:#53200f; --coral-ln:#f0997b; --coral-tx:#f5c4b3;
+    --pink-bg:#53182c;  --pink-ln:#ed93b1; --pink-tx:#f4c0d1;
+    --blue-bg:#0b3258;  --blue-ln:#85b7eb; --blue-tx:#b5d4f4;
+    --gray-bg:#34332f;  --gray-ln:#5f5e5a; --gray-tx:#d3d1c7;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:21px;font-weight:600;margin:0 0 4px}
+.meta{color:var(--ink2);font-size:14px;margin:0 0 2px}
+.note{color:var(--ink3);font-size:13px;margin:10px 0 0}
+.hint{color:var(--ink3);font-size:13px;margin:18px 0 8px}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 4px}
+.chip{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;cursor:pointer;
+  background:var(--card);color:var(--ink2);border:1px solid var(--line2)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stage{position:relative;width:100%;padding-bottom:138%;margin-top:12px;
+  border:3px solid var(--red);border-radius:6px;background:var(--card)}
+.tag{position:absolute;top:-11px;right:8px;background:var(--bg);padding:0 6px;
+  font-size:11px;color:var(--red);letter-spacing:.02em}
+.b{position:absolute;border-radius:5px;border:1px solid;padding:4px 3px;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  text-align:center;cursor:pointer;font:inherit;transition:filter .12s,opacity .18s}
+.b:hover,.b:focus-visible{filter:brightness(.94);outline:none}
+.b .no{font-size:12px;font-weight:600;line-height:1.2}
+.b .nm{font-size:11px;line-height:1.25}
+.b .ct{font-size:10px;line-height:1.2;opacity:.8}
+.b.dim{opacity:.22}
+.purple{background:var(--purple-bg);border-color:var(--purple-ln);color:var(--purple-tx)}
+.teal{background:var(--teal-bg);border-color:var(--teal-ln);color:var(--teal-tx)}
+.coral{background:var(--coral-bg);border-color:var(--coral-ln);color:var(--coral-tx)}
+.pink{background:var(--pink-bg);border-color:var(--pink-ln);color:var(--pink-tx)}
+.blue{background:var(--blue-bg);border-color:var(--blue-ln);color:var(--blue-tx)}
+.gray{background:var(--gray-bg);border-color:var(--gray-ln);color:var(--gray-tx);cursor:default}
+.gray:hover{filter:none}
+#tip{position:absolute;z-index:9;max-width:260px;background:var(--card);color:var(--ink);
+  border:1px solid var(--line2);border-radius:10px;padding:10px 12px;pointer-events:none;
+  box-shadow:0 6px 20px rgba(0,0,0,.14);opacity:0;transition:opacity .12s;font-size:13px}
+#tip.on{opacity:1}
+#tip .h{font-weight:600;font-size:14px;margin-bottom:2px}
+#tip .s{color:var(--ink3);font-size:12px;margin-bottom:6px}
+#tip .q{color:var(--ink2);line-height:1.55}
+.panel{margin-top:16px;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:16px 18px;min-height:118px}
+.panel .h{font-size:16px;font-weight:600;margin:0 0 2px}
+.panel .s{color:var(--ink3);font-size:13px;margin:0 0 10px}
+.panel .q{color:var(--ink2);font-size:14px;margin:0}
+.panel .ph{color:var(--ink3);font-size:14px;margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:12px;color:var(--ink3)}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:3px;border:1px solid}
+@media(max-width:560px){
+  .stage{padding-bottom:168%}
+  .b .nm{font-size:10px}.b .ct{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>91APP 內部二手市集 ‧ 攤位地圖</h1>
+  <p class="meta">10/16（五）12:30–17:30　|　7B 辦公室　|　共 21 攤</p>
+  <p class="meta">攤主進場布置 10:00–12:00　|　收攤與場地復原 17:30–18:00</p>
+  <p class="meta">單一攤位尺寸約 150 × 150 cm</p>
+  <p class="note">攤主不需全程在攤位上，可請同事代顧或與同組輪班。</p>
+
+  <div class="filters" id="filters"></div>
+  <p class="hint">地圖以入口視角呈現：入口在最下方，方向與你站在門口看進去一致。滑鼠移到攤位看商品亮點，手機點一下攤位。</p>
+
+  <div class="stage" id="stage">
+    <span class="tag">可擺攤範圍 950 × 1250 cm</span>
+    <div id="tip"></div>
+  </div>
+
+  <div class="panel" id="panel">
+    <p class="ph">選一個攤位，這裡會顯示攤主的商品亮點預告。</p>
+  </div>
+
+  <div class="legend">
+    <span><i class="sw" style="background:var(--purple-bg);border-color:var(--purple-ln)"></i>A 區 近入口</span>
+    <span><i class="sw" style="background:var(--teal-bg);border-color:var(--teal-ln)"></i>B 區 靠牆服飾</span>
+    <span><i class="sw" style="background:var(--coral-bg);border-color:var(--coral-ln)"></i>C 區 中島</span>
+    <span><i class="sw" style="background:var(--pink-bg);border-color:var(--pink-ln)"></i>D 區 右側</span>
+  </div>
+</div>
+
+<script>
+var B=[
+{id:"A1",c:"purple",n:"陳致豪",e:"Ryan Chen",d:"OD",t:"綜合挖寶",p:[20.4,0.8,18.6,11.3],
+ g:["服飾配件","書籍文具","3C 電子","居家生活","美妝保養","玩具公仔","運動戶外"],
+ q:"逛的是市集，挖的是寶！生活雜物 × 二手服飾 × 包包配件 × 書籍文具 × 玩具。另有水晶手鍊與手作包包。"},
+{id:"A2",c:"purple",n:"吳文琦",e:"Wen Wu",d:"OD",t:"生活選物",p:[39.6,0.8,18.6,11.3],
+ g:["服飾配件","書籍文具","居家生活","美妝保養","玩具公仔"],
+ q:"歡迎來到小女子生活選物雜貨店！這裡藏著好多服飾配件、美妝保養、可愛公仔與居家小點綴，全都是寶藏甜甜價，快來一起挖寶吧！"},
+{id:"A3",c:"purple",n:"莊麗川",e:"Pure Chuang",d:"PBD",t:"服飾 3C 寵物",p:[58.9,0.8,18.6,11.3],
+ g:["服飾配件","3C 電子","居家生活","玩具公仔"],
+ q:"邂逅命定好物，點亮生活小確幸，甜甜價帶走私房驚喜。另有寵物用品。"},
+{id:"A4",c:"purple",n:"劉一陞",e:"Allison Liu",d:"OD",t:"童書雜貨",p:[78.2,0.8,20.7,11.3],
+ g:["服飾配件","書籍文具","3C 電子","居家生活","玩具公仔"],
+ q:"童書雜貨一整袋。"},
+
+{id:"B1",c:"teal",n:"陳裕玲",e:"Lina Chen",d:"FD",t:"服飾",p:[1.1,13.2,18.6,13.2],
+ g:["服飾配件"],
+ q:"清爽短袖到百搭長袖全都有，多數為全新品！還有全新韓鞋等灰姑娘們來試穿，快來拯救攤主的爆炸衣櫥吧！（請自備購物袋）"},
+{id:"B2",c:"teal",n:"鄭雅文",e:"Sofia Zheng",d:"OD",t:"大衣外套",p:[1.1,27.4,18.6,11.3],
+ g:["服飾配件"],
+ q:"想要變成庫伊拉嗎？絕對沒有動物毛，但質感好的大衣，讓你冬天超有氣勢！"},
+{id:"B3",c:"teal",n:"楊芝騏",e:"Janet Yang",d:"OD",t:"服飾雜貨",p:[1.1,39.7,18.6,11.3],
+ g:["服飾配件","書籍文具","居家生活","美妝保養","玩具公仔"],
+ q:"有多可愛就有多可愛。"},
+{id:"B4",c:"teal",n:"彭伊蓮",e:"Ellen Peng",d:"USD",t:"服飾書籍",p:[1.1,52.1,18.6,11.3],
+ g:["服飾配件","書籍文具","美妝保養"],
+ q:"租屋族實用小物 & 好看服飾出清，快來撿便宜。"},
+
+{id:"C1",c:"coral",n:"王璽喻",e:"Selly Wang",d:"OD",t:"服飾美妝雜貨",p:[34.3,16.8,20,11.3],
+ g:["服飾配件","書籍文具","居家生活","美妝保養","玩具公仔","運動戶外"],
+ q:"稀奇有趣貨真價實的良品。"},
+{id:"C2",c:"coral",n:"吳敏鈴",e:"Minnie Wu",d:"OD",t:"韓系服飾小物",p:[55.7,16.8,20,11.3],
+ g:["服飾配件","居家生活","玩具公仔"],
+ q:"讓女孩成為韓劇女主角必備小物。"},
+{id:"C3",c:"coral",n:"劉家溱",e:"Joy Liu",d:"OD",t:"美妝保養",p:[34.3,29.2,20,11.3],
+ g:["服飾配件","書籍文具","美妝保養","玩具公仔"],
+ q:"精緻人類們的必需品：不局限於外貌、心情與腦袋。"},
+{id:"C4",c:"coral",n:"簡亦秀",e:"yiyi",d:"FSD",t:"玩具公仔",p:[55.7,29.2,20,11.3],
+ g:["玩具公仔"],
+ q:"還沒想好，先搶位子 XD"},
+{id:"C5",c:"coral",n:"謝采瀅",e:"Annie Hsieh",d:"UPD",t:"3C 居家玩具",p:[34.3,41.6,20,11.3],
+ g:["3C 電子","居家生活","玩具公仔"],
+ q:"從可愛玩具公仔到實用的居家小物、3C 好物，歡迎來挖寶把喜歡的商品帶回家。"},
+{id:"C6",c:"coral",n:"謝明哲",e:"Pio Hsieh",d:"UPD",t:"日式周邊",p:[55.7,41.6,20,11.3],
+ g:["服飾配件","書籍文具","居家生活","玩具公仔"],
+ q:"各式周邊、日式雜貨（吉伊卡哇、寶可夢、勇者鬥惡龍）。"},
+{id:"C7",c:"coral",n:"吳雨璇",e:"Luna Wu",d:"OD",t:"公仔全套",p:[34.3,54,20,11.3],
+ g:["玩具公仔"],
+ q:"公仔全套收集機會。"},
+{id:"C8",c:"coral",n:"舒詩樺",e:"Lily Shu",d:"USD",t:"童裝玩具",p:[55.7,54,20,11.3],
+ g:["居家生活","玩具公仔"],
+ q:"接棒成長喜悅！二手玩具／童裝限時巡迴。"},
+{id:"C9",c:"coral",n:"許方瑜",e:"Fang Yu Hsu",d:"ABD",t:"服飾書籍居家玩具",p:[43.2,72.1,32.5,11.3],
+ g:["服飾配件","書籍文具","居家生活","玩具公仔"],
+ q:"二手女裝與雜貨。"},
+
+{id:"D1",c:"pink",n:"張庭大",e:"Jacky Cheung",d:"USD",t:"樂研社周邊",p:[78.6,28.8,20.4,11.3],
+ g:["其他"],
+ q:"你最特別！！！！！樂研社周邊。"},
+{id:"D2",c:"pink",n:"羅時雍",e:"Saussure Lo",d:"CEOO",t:"綜合出清",p:[78.6,41.6,20.4,11.3],
+ g:["服飾配件","書籍文具","居家生活","玩具公仔"],
+ q:"當初買得有多衝動，今天賣得就有多卑微！過了這村沒這店，歡迎來尋寶。"},
+{id:"D3",c:"pink",n:"胡心穎",e:"Erica Hu",d:"ABD",t:"美妝服飾",p:[78.6,72.1,20.4,11.3],
+ g:["服飾配件","美妝保養"],
+ q:"狀況極佳的高質感美妝與時髦服飾限時大清倉，百元甜甜價讓你輕鬆無痛大變身！"},
+{id:"D4",c:"pink",n:"徐周楷",e:"Alex Hsu",d:"OD",t:"CD 黑膠唱片",p:[78.6,84.5,20.4,11.3],
+ g:["其他"],
+ q:"全新未拆的音樂收藏，有 CD 及黑膠唱片（部分稀有已停產）。"}
+];
+
+var FIX=[
+ {c:"gray",lbl:"入口 / 門　👣 你在這",p:[1.1,0.8,18.6,11.3]},
+ {c:"blue",lbl:"陀螺比賽場地",p:[1.1,72.1,30.4,17.1]},
+ {c:"gray",lbl:"柱",p:[26.1,55.5,5.4,3.4]}
+];
+
+var stage=document.getElementById("stage"),tip=document.getElementById("tip"),panel=document.getElementById("panel");
+
+FIX.forEach(function(f){
+  var d=document.createElement("div");
+  d.className="b "+f.c;
+  d.style.cssText="left:"+(100-f.p[0]-f.p[2])+"%;top:"+(100-f.p[1]-f.p[3])+"%;width:"+f.p[2]+"%;height:"+f.p[3]+"%";
+  d.innerHTML='<span class="nm">'+f.lbl+'</span>';
+  stage.appendChild(d);
+});
+
+B.forEach(function(b){
+  var el=document.createElement("button");
+  el.type="button"; el.className="b "+b.c; el.dataset.id=b.id;
+  el.style.cssText="left:"+(100-b.p[0]-b.p[2])+"%;top:"+(100-b.p[1]-b.p[3])+"%;width:"+b.p[2]+"%;height:"+b.p[3]+"%";
+  el.innerHTML='<span class="no">'+b.id+'</span><span class="nm">'+b.n+'</span><span class="ct">'+b.t+'</span>';
+  el.addEventListener("mouseenter",function(ev){show(b);place(el)});
+  el.addEventListener("mouseleave",function(){tip.classList.remove("on")});
+  el.addEventListener("focus",function(){show(b);place(el)});
+  el.addEventListener("blur",function(){tip.classList.remove("on")});
+  el.addEventListener("click",function(){show(b);place(el)});
+  stage.appendChild(el);
+  b.el=el;
+});
+
+function show(b){
+  tip.innerHTML='<div class="h">'+b.id+'　'+b.n+'</div><div class="s">'+b.e+' ['+b.d+']　'+b.t+'</div><div class="q">'+b.q+'</div>';
+  tip.classList.add("on");
+  panel.innerHTML='<p class="h">'+b.id+'　'+b.n+'　<span style="font-weight:400;color:var(--ink3);font-size:14px">'+b.e+'</span></p>'+
+    '<p class="s">['+b.d+']　'+b.g.join(' · ')+'</p><p class="q">'+b.q+'</p>';
+}
+
+function place(el){
+  var sr=stage.getBoundingClientRect(),er=el.getBoundingClientRect();
+  var x=er.left-sr.left+er.width/2, y=er.top-sr.top;
+  tip.style.left="0px"; tip.style.top="0px";
+  var tw=tip.offsetWidth, th=tip.offsetHeight;
+  var lx=Math.max(6,Math.min(x-tw/2,sr.width-tw-6));
+  var ty=y-th-10; if(ty<6) ty=y+er.height+10;
+  tip.style.left=lx+"px"; tip.style.top=ty+"px";
+}
+
+var CATS=["服飾配件","書籍文具","3C 電子","居家生活","美妝保養","玩具公仔","運動戶外","其他"];
+var active=null, fw=document.getElementById("filters");
+CATS.forEach(function(c){
+  var btn=document.createElement("button");
+  btn.type="button"; btn.className="chip"; btn.textContent=c; btn.setAttribute("aria-pressed","false");
+  btn.addEventListener("click",function(){
+    active = (active===c) ? null : c;
+    [].forEach.call(fw.children,function(x){x.setAttribute("aria-pressed",String(x.textContent===active))});
+    B.forEach(function(b){b.el.classList.toggle("dim", !!active && b.g.indexOf(active)<0)});
+  });
+  fw.appendChild(btn);
+});
+</script>
+</body>
+</html>
